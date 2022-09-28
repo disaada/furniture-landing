@@ -1,103 +1,75 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import "./App.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMagnifyingGlass,
-  faCartShopping,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
-import logo from "./assets/img/logo.svg";
-import { FurnitureOne, FurnitureTwo, FurnitureThree, FurnitureFour } from "./components";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, Loader } from "@react-three/drei";
 import { Suspense } from "react";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
+import Plant from "./assets/img/plant.png";
+import { useState, useEffect } from "react";
+import {
+  FurnitureOne,
+  FurnitureTwo,
+  FurnitureThree,
+  FurnitureFour,
+  Navbar,
+  SliderComponent
+} from "./components";
 import Furniture1 from "./assets/img/furniture1.png";
 import Furniture2 from "./assets/img/furniture2.png";
 import Furniture3 from "./assets/img/furniture3.png";
 import Furniture4 from "./assets/img/furniture4.png";
-import Plant from "./assets/img/plant.png";
-import { useState } from "react";
-
-const PrevArrow = () => null;
-
-const NextArrow = ({ onClick }) => (
-  <button
-    style={{
-      backgroundColor: "#000",
-      color: "#fff",
-      borderRadius: "50%",
-      padding: 15,
-      display: "inline",
-      position: "absolute",
-      right: "-50px",
-      top: "13rem",
-      cursor: "pointer",
-    }}
-    onClick={onClick}
-  >
-    <FontAwesomeIcon icon={faArrowRight} />
-  </button>
-);
 
 function App() {
   const [active, setActive] = useState(1)
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    className: "slider-slick",
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    responsive: [
-      {
-        breakpoint: 700,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-    ],
-  };
-
+  const [navbar, setNavbar] = useState(false)
   const productData = [
-    { id: 1, component: <FurnitureOne /> , image: Furniture1, name: "Bruna Cush", price: "Rp. 1.456.000" },
-    { id: 2, component: <FurnitureTwo /> , image: Furniture2, name: "Drop Type", price: "Rp. 2.655.000" },
-    { id: 3, component: <FurnitureThree /> , image: Furniture3, name: "Blackboard 3", price: "Rp. 1.600.000" },
-    { id: 4, component: <FurnitureFour /> , image: Furniture4, name: "Spring Forest", price: "Rp. 2.150.000" },
+    {
+      id: 1,
+      component: <FurnitureOne />,
+      image: Furniture1,
+      name: "Bruna Cush",
+      price: "Rp. 1.456.000",
+    },
+    {
+      id: 2,
+      component: <FurnitureTwo />,
+      image: Furniture2,
+      name: "Drop Type",
+      price: "Rp. 2.655.000",
+    },
+    {
+      id: 3,
+      component: <FurnitureThree />,
+      image: Furniture3,
+      name: "Blackboard 3",
+      price: "Rp. 1.600.000",
+    },
+    {
+      id: 4,
+      component: <FurnitureFour />,
+      image: Furniture4,
+      name: "Spring Forest",
+      price: "Rp. 2.150.000",
+    },
   ];
+
+  const changeBackground = () => {
+    if (window.scrollY >= 66) {
+      setNavbar(true)
+    } else {
+      setNavbar(false)
+    }
+  }
+
+  useEffect(() => {
+    changeBackground()
+    window.addEventListener("scroll", changeBackground)
+  })
 
   return (
     <div className="App">
-      <header className="flex">
-        <div className="logo">
-          <img src={logo} alt="" />
-        </div>
-        <div className="nav flex">
-          <div className="nav-link">
-            <a href="#">Home</a>
-            <a href="#">Furniture</a>
-            <a href="#">Product</a>
-            <a href="#">Store</a>
-          </div>
-          <div className="nav-button">
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-            <FontAwesomeIcon icon={faCartShopping} />
-          </div>
-        </div>
-      </header>
+      <Navbar navbar={navbar}  />
       <main>
         <div className="hero-circle">
-          {/* <img src={Plant} alt="" /> */}
+          <img src={Plant} alt="" />
         </div>
         <div className="hero">
           <section className="hero-section">
@@ -124,28 +96,10 @@ function App() {
                 />
               </Suspense>
             </Canvas>
+            <Loader dataInterpolation={() => "Loading..."} />
           </section>
         </div>
-        <div className="slider flex">
-          <section className="slider-title">
-            <h4>Featured</h4>
-          </section>
-          <section className="slider-content">
-            <Slider {...settings}>
-              {productData.map((data) => (
-                <div key={data.id+data.name}>
-                  <div className="slider-base" onClick={() => setActive(data.id)}>
-                    <img src={data.image} alt="" />
-                    <p>{data.name}</p>
-                    <p>
-                      <b>{data.price}</b>
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </section>
-        </div>
+        <SliderComponent setActive={setActive} productData={productData} />
       </main>
     </div>
   );
